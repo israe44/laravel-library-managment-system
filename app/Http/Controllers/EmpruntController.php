@@ -7,59 +7,45 @@ use Illuminate\Http\Request;
 
 class EmpruntController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Emprunt $emprunt)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Emprunt $emprunt)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Emprunt $emprunt)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Emprunt $emprunt)
-    {
-        //
-    }
+   public function index () {
+    $emprunts = Emprunt::all(); 
+    return view('emprunts.index', compact('emprunts'));
+   }
+   public function create() {
+    return view ('emprunts.create');
+   }
+   public function store (Request $request ) 
+   {
+    $request->validate([
+        'adherent_id' => 'required|exists:adherents,id',
+        'livre_id' => 'required|exists:livres,id',
+        'date_emprunt' => 'required|date',
+        'date_retour_prevue' => 'required|date|after_or_equal:date_emprunt',
+    ]);
+    $emprunt = Emprunt::create($request->all());
+    return redirect()->route('emprunts.index');
+   }
+   public function update (Request $request, Emprunt $emprunt)
+   {
+    $request->validate([
+        'adherent_id' => 'required|exists:adherents,id',
+        'livre_id' => 'required|exists:livres,id',
+        'date_emprunt' => 'required|date',
+        'date_retour_prevue' => 'required|date|after_or_equal:date_emprunt',
+        'date_retour_reelle' => 'nullable|date|after_or_equal:date_emprunt',
+        'statut' => 'required|string',
+    ]);
+    $emprunt->update($request->all());
+    return redirect()->route('emprunts.index');
+   }
+   public function edit (Emprunt $emprunt) {
+    return view ('emprunt.edit', compact('emprunt'));
+   }
+   public function destroy (Emprunt $emprunt) {
+    $emprunt->delete();
+    return redirect()->route('emprunts.index');
+   }
+   public function show (Emprunt $emprunt) {
+    return view ('emprunt.show', compact('emprunt'));
+   }
 }
