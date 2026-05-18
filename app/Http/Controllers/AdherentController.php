@@ -12,7 +12,8 @@ class AdherentController extends Controller
      */
     public function index()
     {
-        //
+        $adherents = Adherent::all();
+        return view('adherents.index', compact('adherents'));
     }
 
     /**
@@ -20,7 +21,7 @@ class AdherentController extends Controller
      */
     public function create()
     {
-        //
+        return view('adherents.create');
     }
 
     /**
@@ -28,7 +29,14 @@ class AdherentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'email' => 'required|email|unique:adherents,email',
+            'telephone' => 'nullable|string|max:20',
+        ]);
+        Adherent::create($request->validated());
+        return redirect()->route('adherents.index')->with('success', 'Adhérent créé avec succès');
     }
 
     /**
@@ -36,7 +44,7 @@ class AdherentController extends Controller
      */
     public function show(Adherent $adherent)
     {
-        //
+        return view('adherents.show', compact('adherent'));
     }
 
     /**
@@ -44,7 +52,7 @@ class AdherentController extends Controller
      */
     public function edit(Adherent $adherent)
     {
-        //
+        return view('adherents.edit', compact('adherent'));
     }
 
     /**
@@ -52,7 +60,14 @@ class AdherentController extends Controller
      */
     public function update(Request $request, Adherent $adherent)
     {
-        //
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'email' => 'required|email|unique:adherents,email,' . $adherent->id,
+            'telephone' => 'nullable|string|max:20',
+        ]);
+        $adherent->update($request->validated());
+        return redirect()->route('adherents.index')->with('success', 'Adhérent mis à jour avec succès');
     }
 
     /**
@@ -60,6 +75,7 @@ class AdherentController extends Controller
      */
     public function destroy(Adherent $adherent)
     {
-        //
+        $adherent->delete();
+        return redirect()->route('adherents.index')->with('success', 'Adhérent supprimé avec succès');
     }
 }
